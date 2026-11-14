@@ -1,0 +1,12 @@
+# Local Python virtual environments
+.venv/
+venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local environment variables
+.env
+.env.*
+!.env.example
