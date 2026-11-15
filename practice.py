@@ -77,7 +77,7 @@ evidence 必须逐字摘自本次 answer。无法批改或需要澄清时可以�
 
 
 def get_session(state, session_id: str) -> dict:
-    session = state.sessions.get(session_id)
+    session = state.practice_sessions.get(session_id)
     if session is None:
         raise HTTPException(404, "会话不存在，请先创建会话")
     return session
@@ -117,6 +117,13 @@ async def model_json(state, session, prompt, payload, schema):
 @router.post("/generate", status_code=201)
 async def generate_exercise(body: GenerateIn, request: Request):
     state = request.app.state
+    # Validate the persistent session and share the chat API's cross-worker lock.
+    async with state.store.locked_session(body.session_id):
+        state.practice_sessions.setdefault(body.session_id, {"busy": False})
+        return await _generate_exercise(body, state)
+
+
+async def _generate_exercise(body: GenerateIn, state):
     session = get_session(state, body.session_id)
     exercises = session.setdefault("exercises", {})
 
@@ -172,6 +179,11 @@ async def generate_exercise(body: GenerateIn, request: Request):
 @router.post("/{exercise_id}/attempts", status_code=201)
 async def submit_attempt(exercise_id: str, body: AttemptIn, request: Request):
     state = request.app.state
+    async with state.store.locked_session(body.session_id):
+        return await _submit_attempt(exercise_id, body, state)
+
+
+async def _submit_attempt(exercise_id: str, body: AttemptIn, state):
     session = get_session(state, body.session_id)
     exercise = session.get("exercises", {}).get(exercise_id)
 

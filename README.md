@@ -37,11 +37,51 @@ DB_PASSWORD=本地随机生成的密码
 
 `.env` 仅本机用户可读写，已被 Git 忽略。不要上传、分享或使用 root 替代应用账号。修改配置后重启后端。数据库配置缺失、连接失败或未建表时，后端启动失败，不回退到内存。
 
+## Vue 引导式练习页
+
+首次安装前端（Node.js 22.12+）：
+
+```bash
+cd frontend
+npm install
+```
+
+在项目根目录启动后端：
+
+```bash
+uv run uvicorn main:app --reload --host 127.0.0.1 --port 8001
+```
+
+另开一个终端启动前端：
+
+```bash
+cd /home/sun/projects/studyflow-first-chat/frontend
+npm run dev
+```
+
+打开终端显示的地址（默认 `http://localhost:5173`），输入“判断 FOLLOW 集什么时候需要传递”。页面支持出题、提交/补充答案、反馈、答对后生成变式，并保留本轮原题和作答供回看。请求失败不会清除答案草稿；开始新练习成功后替换当前题卡。
+
+开发时 `/api` 由 Vite 转发到 `http://127.0.0.1:8001`，无需配置 CORS。若后端使用 8000，可运行 `API_TARGET=http://127.0.0.1:8000 npm run dev`。生产构建不包含开发代理，部署时需另行配置 `/api` 反向代理。
+
+**当前练习仅适用于单个后端 worker、本地短时使用**：会话身份仍由 MySQL 校验，练习和聊天共享会话锁，但题目与作答暂存在后端进程内，并非 MySQL 持久化。刷新页面不会恢复题卡；后端重启（含 reload）后需开始新练习。原有聊天历史仍保存在 MySQL，不受影响。长时使用会累积内存练习记录，重启可清空；尚未实现练习恢复和过期清理。
+
+前端验证（模拟 API，不产生模型费用）：
+
+```bash
+cd frontend
+npm test
+npm run build
+```
+
+后端 `tests/test_practice.py` 使用模拟模型和存储，验证练习接口接入、补充作答、变式、失败重试和会话锁；不代表真实模型的出题或评分质量已验证。
+
 ## 接口
 
 | 方法 | 路径 | 作用 |
 |---|---|---|
 | GET | `/health` | 数据库连通性、模型配置状态 |
+| POST | `/exercises/generate` | `{session_id, goal}` 出题，或 `{session_id, variant_of}` 生成已答对原题的变式 |
+| POST | `/exercises/{exercise_id}/attempts` | `{session_id, answer, supplement}` 作答/补充，返回反馈和下一步 |
 | POST | `/sessions` | 创建会话，返回 `session_id` |
 | POST | `/sessions/{session_id}/messages` | 请求体 `{"message":"什么是词法分析？"}` |
 | GET | `/sessions/{session_id}/messages` | 按保存顺序返回历史、`message_count`、`busy` |

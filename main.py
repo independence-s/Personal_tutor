@@ -11,6 +11,7 @@ from openai import AsyncOpenAI, APIError
 from pydantic import BaseModel, Field
 
 from database import SessionBusy, SessionNotFound, SessionStore
+from practice import router as practice_router
 
 load_dotenv()
 
@@ -33,6 +34,8 @@ SYSTEM_PROMPT = """
 async def lifespan(app: FastAPI):
     # 数据库不可用时启动失败，不悄悄退回会丢失数据的内存存储。
     app.state.llm = None
+    # Practice is currently process-local; chat history remains in MySQL.
+    app.state.practice_sessions = {}
     try:
         app.state.store = await SessionStore.open()
     except (aiomysql.MySQLError, OSError, ValueError):
@@ -58,6 +61,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="StudyFlow 第一次对话", lifespan=lifespan)
+app.include_router(practice_router)
 
 
 @app.exception_handler(SessionNotFound)

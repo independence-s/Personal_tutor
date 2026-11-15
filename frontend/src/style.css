@@ -1,0 +1,42 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+  color: #1e293b;
+  background: #f3f5f8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  line-height: 1.65;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 800px; margin: 0 auto; padding: 36px 20px 64px; }
+h1 { margin: 0 0 8px; font-size: 2rem; }
+h2 { margin: 0 0 16px; font-size: 1.25rem; overflow-wrap: anywhere; }
+h3 { font-size: 1rem; }
+header { margin-bottom: 28px; }
+header p { color: #536176; }
+.eyebrow { color: #2563eb; font-weight: 700; margin: 0 0 6px; }
+.card { background: white; border: 1px solid #e1e6ed; border-radius: 12px; padding: 26px; margin: 20px 0; }
+label { display: block; font-weight: 600; margin-bottom: 8px; }
+textarea { display: block; width: 100%; resize: vertical; min-height: 90px; border: 1px solid #94a3b8; border-radius: 7px; padding: 12px; font: inherit; color: inherit; background: white; }
+button { border: 0; border-radius: 7px; padding: 11px 20px; background: #1d4ed8; color: white; font: inherit; font-weight: 600; cursor: pointer; }
+button:hover:not(:disabled) { background: #1e40af; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+textarea:disabled { background: #f8fafc; }
+:focus-visible { outline: 3px solid #60a5fa; outline-offset: 3px; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.muted { color: #536176; font-size: .875rem; margin: 6px 0 14px; }
+.preserve { white-space: pre-wrap; overflow-wrap: anywhere; }
+.question { font-size: 1.1rem; margin-bottom: 24px; }
+.checkbox { display: flex; align-items: center; gap: 8px; font-weight: 400; margin: 12px 0 18px; }
+.checkbox input { width: 18px; height: 18px; flex-shrink: 0; }
+.attempts { list-style: none; padding: 0; }
+.attempts li { border-top: 1px solid #e1e6ed; padding: 8px 0 16px; }
+.hint { background: #eff6ff; padding: 12px; border-radius: 6px; }
+.error { color: #991b1b; background: #fef2f2; padding: 14px; border-radius: 7px; overflow-wrap: anywhere; }
+.status { color: #475569; }
+.complete { color: #166534; font-weight: 700; }
+@media (max-width: 520px) {
+  main { padding: 24px 12px 40px; }
+  .card { padding: 20px 16px; }
+  button { width: 100%; }
+}
